@@ -3,16 +3,16 @@ from operator import gt, ge, lt, le, eq, ne
 
 class RomanNum:
     MIN_NUM, MAX_NUM = 1, 3999
-    ROMAN_DICT = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
-    VALUES = (1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    ROMANS = 'M CM D CD C XC L XL X IX V IV I'.split()
-    ROMAN_SET = set()
-    for n in range(1, 4000):
+    VALUES, ROMANS = [*range(MIN_NUM, MAX_NUM + 1)], []
+    for n in range(MIN_NUM, MAX_NUM + 1):
         result = ''
-        for value, roman in zip(VALUES, ROMANS):
+        for value, roman in zip([1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1],
+                                'M CM D CD C XC L XL X IX V IV I'.split()):
             result += n // value * roman
             n %= value
-        ROMAN_SET.add(result)
+        ROMANS.append(result)
+    VAL_ROMAN_DICT = dict(zip(VALUES, ROMANS))
+    ROMAN_VAL_DICT = dict(zip(ROMANS, VALUES))
 
     def __init__(self, data):
         if isinstance(data, int):
@@ -69,7 +69,7 @@ class RomanNum:
             raise TypeError("A RomanNum object can be added to int, str, RomanNum object.")
 
     def __is_roman(self, s: str):
-        if s not in self.ROMAN_SET:
+        if s not in self.ROMAN_VAL_DICT:
             raise ValueError(f'the string param in RomanNum is not correct roman numeral: "{s}"')
 
     def __compare(self, other, comparison_sign):
@@ -85,15 +85,10 @@ class RomanNum:
             raise TypeError("A RomanNum object can be tested for equality with int, str, RomanNum.")
 
     def __to_roman(self, num: int) -> str:
-        result = ''
-        for value, roman in zip(self.VALUES, self.ROMANS):
-            result += num // value * roman
-            num %= value
-        return result
+        return self.VAL_ROMAN_DICT[num]
 
     def __to_num(self, stroke: str) -> int:
-        nums = [self.ROMAN_DICT[char] for char in stroke] + [0]
-        return sum(-nums[i] if nums[i + 1] > nums[i] else nums[i] for i in range(len(nums) - 1))
+        return self.ROMAN_VAL_DICT[stroke]
 
 
 inp = input()
